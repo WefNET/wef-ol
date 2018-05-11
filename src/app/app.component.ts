@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { HostListener, Component, OnInit } from '@angular/core';
 import { BallsModuleLayer, BallsLayer } from './layers/recursive.balls'
+
+import { Message } from 'primeng/api';
 
 declare var ol: any;
 
@@ -12,7 +14,19 @@ declare var ol: any;
 export class AppComponent {
   map: any;
   ballsLayer: any;
-  showDebug: boolean = false;
+  showDebug: boolean = true;
+  showBallsTouhcingAha = true;
+
+  msgs: Message[] = [];
+
+  @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
+
+    // c or C
+    if (event.keyCode === 99 || event.keyCode === 67) { 
+      this.msgs = [];
+      this.msgs.push({ severity: 'success', summary: 'Key Pressed', detail: 'I "C" what you mean...' });
+;    }
+  }
 
   ngOnInit(): void {
     // oh shit the real map code kinda starts here!
@@ -35,12 +49,6 @@ export class AppComponent {
     });
 
     var controls = [
-      new ol.control.MousePosition({
-        undefinedHTML: 'outside',
-        coordinateFormat: function (coordinate) {
-          return ol.coordinate.format(coordinate, '{x}, {y}', 0);
-        }
-      }),
       new ol.control.Zoom(),
       new ol.control.FullScreen(),
     ];
@@ -68,15 +76,22 @@ export class AppComponent {
       })
     });
 
-    this.map.on('moveend', function (evt) {
-      if (this.showDebug) {
-        console.log("Event", evt);
-        console.log("Map", evt.map);
+    this.map.on('moveend', (evt) => {
+      console.log("Event", evt);
+      console.log("Map", evt.map);
 
-        let zoom = evt.map.getView().getZoom();
-        console.log("Zoom", zoom);
+      let zoom = evt.map.getView().getZoom();
+      if (zoom >= 7) {
+        if (this.showBallsTouhcingAha) {
+          this.showBallsTouhcingAha = false;
+          this.msgs = [];
+          this.msgs.push({ severity: 'warn', summary: 'Aha!', detail: 'The balls are not touching!' });
+        }
       }
+      console.log("Zoom", zoom);
     });
+
+    this.msgs.push({ severity: 'warn', summary: 'Welcome', detail: 'I wonder if these balls are touching...' });
   }
 }
 

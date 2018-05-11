@@ -51,7 +51,7 @@ export class BallsLayer implements BallsModuleLayer {
     }
 
     styleFunction(feature, resolution) {
-        console.log("Res", resolution);
+        // console.log("Res", resolution);
         var type = feature.get('type');
 
         if (type === "Ball") {
