@@ -1,7 +1,7 @@
 import { HostListener, Component, OnInit } from '@angular/core';
 import { BallsModuleLayer, BallsLayer } from './layers/recursive.balls'
 
-import { Message } from 'primeng/api';
+import { Message } from 'primeng/components/common/api';
 
 declare var ol: any;
 
@@ -15,17 +15,18 @@ export class AppComponent {
   map: any;
   ballsLayer: any;
   showDebug: boolean = true;
-  showBallsTouhcingAha = true;
+  showBallsTouchingAha = true;
 
   msgs: Message[] = [];
 
   @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
 
     // c or C
-    if (event.keyCode === 99 || event.keyCode === 67) { 
+    if (event.keyCode === 99 || event.keyCode === 67) {
       this.msgs = [];
       this.msgs.push({ severity: 'success', summary: 'Key Pressed', detail: 'I "C" what you mean...' });
-;    }
+      ;
+    }
   }
 
   ngOnInit(): void {
@@ -81,17 +82,24 @@ export class AppComponent {
       console.log("Map", evt.map);
 
       let zoom = evt.map.getView().getZoom();
+
       if (zoom >= 7) {
-        if (this.showBallsTouhcingAha) {
-          this.showBallsTouhcingAha = false;
+        if (this.showBallsTouchingAha) {
+          this.showBallsTouchingAha = false;
           this.msgs = [];
-          this.msgs.push({ severity: 'warn', summary: 'Aha!', detail: 'The balls are not touching!' });
+          this.msgs.push({ severity: 'warn', summary: 'Aha!', detail: 'The balls are not touching!', life: 12000 });
         }
+      }
+
+      if (zoom == 0) {
+        this.showBallsTouchingAha = true;
+        this.msgs = [];
+        this.msgs.push({ severity: 'warn', summary: 'Welcome', detail: 'I wonder if these balls are touching...', life: 12000 });
       }
       console.log("Zoom", zoom);
     });
 
-    this.msgs.push({ severity: 'warn', summary: 'Welcome', detail: 'I wonder if these balls are touching...' });
+    this.msgs.push({ severity: 'warn', summary: 'Welcome', detail: 'I wonder if these balls are touching...', life: 12000 });
   }
 }
 
